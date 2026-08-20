@@ -145,7 +145,7 @@ public class LoginServlet extends HttpServlet {
                     "You're Successfully Logged In!" +
                     "</p>" +
 
-                    "<a href='home.html' class='button'>" +
+                    "<a href='products' class='button'>" +
                     "Start Shopping" +
                     "</a>" +
 
