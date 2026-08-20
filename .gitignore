@@ -1,1 +1,17 @@
 target/
+*.class
+
+# Tomcat
+tomcat/
+apache-tomcat/
+logs/
+temp/
+work/
+
+# IDE
+.vscode/
+.idea/
+
+# OS 
+.DS_Store
+Thumbs.db
