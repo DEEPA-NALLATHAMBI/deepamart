@@ -28,6 +28,7 @@ public class ProductsServlet extends HttpServlet {
         List<Product> products;
         try{
          products= productDAO.getAllProducts();
+         System.out.println("Products found: " + products.size());
         } catch(Exception e){
             e.printStackTrace();
             throw new ServletException(e);
