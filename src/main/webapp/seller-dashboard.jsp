@@ -73,7 +73,7 @@ h2{
     <h2>Order Management</h2>
     <p>View customer orders.</p>
 
-    <a href="my-orders.jsp" class="btn">View Orders</a>
+    <a href="seller-orders" class="btn">View Orders</a>
 </div>
 
 </div>

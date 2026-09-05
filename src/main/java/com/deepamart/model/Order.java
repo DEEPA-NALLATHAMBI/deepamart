@@ -3,6 +3,7 @@ package com.deepamart.model;
 public class Order {
 
     private int orderId;
+    private int userId;
     private double totalAmount;
     private String paymentMethod;
     private String orderStatus;
@@ -22,6 +23,14 @@ public class Order {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public double getTotalAmount() {

@@ -1,7 +1,5 @@
 package com.deepamart;
-
 import com.deepamart.model.Order;
-import com.deepamart.model.OrderItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,65 +7,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/place-order")
 public class OrderServlet extends HttpServlet {
 
-    @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
-        String paymentMethod = request.getParameter("paymentMethod");
-        String[] productNames = request.getParameterValues("productName");
-        String[] productPrices = request.getParameterValues("productPrice");
+        try {
 
-        if (productNames == null || productPrices == null ||
-                productNames.length == 0) {
+            OrderDAO dao = new OrderDAO();
 
-            response.sendRedirect("cart.jsp");
-            return;
-        }
+            List<Order> orders = dao.getAllOrders();
 
-        List<OrderItem> items = new ArrayList<>();
-        double totalAmount = 0;
+            request.setAttribute("orders", orders);
 
-        for (int i = 0; i < productNames.length; i++) {
+            request.getRequestDispatcher("my-orders.jsp")
+                   .forward(request, response);
 
-            double price = Double.parseDouble(productPrices[i]);
+        } catch (Exception e) {
 
-            OrderItem item = new OrderItem(
-                    productNames[i],
-                    price,
-                    1
-            );
+            e.printStackTrace();
 
-            items.add(item);
-            totalAmount += price;
-        }
-
-        Order order = new Order(
-                totalAmount,
-                paymentMethod
-        );
-
-        OrderDAO orderDAO = new OrderDAO();
-
-        int orderId = orderDAO.saveOrder(order, items);
-
-        if (orderId > 0) {
-
-            response.sendRedirect(
-                    "order-success.jsp?orderId=" + orderId
-            );
-
-        } else {
-
-            response.getWriter().println(
-                    "Order could not be placed. Please try again."
-            );
+            response.getWriter().println("Unable to load orders");
         }
     }
 }

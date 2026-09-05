@@ -88,7 +88,7 @@ p{
 
         <div class="order-id">
             Your Order ID:
-            <%= request.getParameter("orderId") %>
+            <%= session.getAttribute("orderId") %>
         </div>
 
         <p>
