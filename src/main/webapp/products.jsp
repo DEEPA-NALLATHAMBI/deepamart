@@ -299,7 +299,7 @@ if(products != null){
     <!-- Only Seller can Edit/Delete -->
 
     <%
-    if("SELLER".equalsIgnoreCase(role)){
+    if("SELLER".equalsIgnoreCase(role) || "ADMIN".equalsIgnoreCase(role)){
     %>
 
         <a class="edit-btn"

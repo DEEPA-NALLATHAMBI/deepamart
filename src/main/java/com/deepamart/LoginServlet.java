@@ -45,16 +45,14 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("userId", rs.getInt("id"));
 
                 if ("SELLER".equalsIgnoreCase(role)) {
-                    response.sendRedirect(
-                        request.getContextPath() +
-                        "/seller-dashboard.jsp"
-                    );
-                } else {
-                    response.sendRedirect(
-                        request.getContextPath() +
-                        "/login-success.jsp"
-                    );
-                }
+              response.sendRedirect(request.getContextPath() + "/seller-dashboard.jsp");
+
+            } else if ("ADMIN".equalsIgnoreCase(role)) {
+    response.sendRedirect(request.getContextPath() + "/admin-dashboard.jsp");
+
+        } else {
+         response.sendRedirect(request.getContextPath() + "/login-success.jsp");
+       }
 
             } else {
 
