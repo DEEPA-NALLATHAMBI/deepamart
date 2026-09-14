@@ -38,7 +38,7 @@ public class OrderDAO {
                 orderStmt.setDouble(1, order.getTotalAmount());
                 orderStmt.setString(2, order.getPaymentMethod());
                 orderStmt.setString(3, order.getOrderStatus());
-                orderStmt.setInt(4,order.getUserId());
+                orderStmt.setInt(4, order.getUserId());
 
                 orderStmt.executeUpdate();
 
@@ -61,12 +61,11 @@ public class OrderDAO {
 
             } catch (Exception e) {
                 con.rollback();
-                e.printStackTrace();
                 return 0;
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            return 0;
         }
 
         return orderId;
@@ -104,105 +103,130 @@ public class OrderDAO {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return orders;
     }
+
     public List<Order> getOrdersByUser(int userId) {
 
-    List<Order> orders = new ArrayList<>();
+        List<Order> orders = new ArrayList<>();
 
-    String sql =
-        "SELECT * FROM orders WHERE user_id=? ORDER BY order_id DESC";
+        String sql =
+            "SELECT * FROM orders WHERE user_id=? " +
+            "ORDER BY order_id DESC";
 
-    try (
-        Connection con = DBConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement(sql)
-    ) {
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)
+        ) {
 
-        while (rs.next()) {
-            Order order = new Order();
-            order.setOrderId(rs.getInt("order_id"));
-            order.setUserId(rs.getInt("user_id"));
-            order.setTotalAmount(rs.getDouble("total_amount"));
-            order.setPaymentMethod(rs.getString("payment_method"));
-            order.setOrderStatus(rs.getString("order_status"));
-            orders.add(order);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return orders;
-}
-    public boolean updateOrderStatus(int orderId, String status) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
 
-    String sql = "UPDATE orders SET order_status=? WHERE order_id=?";
+            while (rs.next()) {
 
-    try (
-        Connection con = DBConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement(sql)
-    ) {
+                Order order = new Order();
 
-        ps.setString(1, status);
-        ps.setInt(2, orderId);
+                order.setOrderId(
+                    rs.getInt("order_id")
+                );
 
-        return ps.executeUpdate() > 0;
+                order.setUserId(
+                    rs.getInt("user_id")
+                );
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
-    }
-        }
-        public List<OrderItem> getOrderItems(int orderId) {
+                order.setTotalAmount(
+                    rs.getDouble("total_amount")
+                );
 
-    List<OrderItem> items = new ArrayList<>();
+                order.setPaymentMethod(
+                    rs.getString("payment_method")
+                );
 
-    String sql =
-        "SELECT * FROM order_items WHERE order_id=?";
+                order.setOrderStatus(
+                    rs.getString("order_status")
+                );
 
-    try (
-        Connection con = DBConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement(sql)
-    ) {
+                orders.add(order);
+            }
 
-        ps.setInt(1, orderId);
-
-        ResultSet rs = ps.executeQuery();
-
-        while (rs.next()) {
-
-            OrderItem item = new OrderItem();
-
-            item.setOrderItemId(
-                rs.getInt("order_item_id")
-            );
-
-            item.setOrderId(
-                rs.getInt("order_id")
-            );
-
-            item.setProductName(
-                rs.getString("product_name")
-            );
-
-            item.setProductPrice(
-                rs.getDouble("product_price")
-            );
-
-            item.setQuantity(
-                rs.getInt("quantity")
-            );
-
-            items.add(item);
+        } catch (Exception e) {
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        return orders;
     }
 
-    return items;
+    public boolean updateOrderStatus(
+            int orderId, String status) {
+
+        String sql =
+            "UPDATE orders SET order_status=? " +
+            "WHERE order_id=?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps =
+                con.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, status);
+            ps.setInt(2, orderId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            return false;
         }
+    }
+
+    public List<OrderItem> getOrderItems(int orderId) {
+
+        List<OrderItem> items = new ArrayList<>();
+
+        String sql =
+            "SELECT * FROM order_items WHERE order_id=?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps =
+                con.prepareStatement(sql)
+        ) {
+
+            ps.setInt(1, orderId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                OrderItem item = new OrderItem();
+
+                item.setOrderItemId(
+                    rs.getInt("order_item_id")
+                );
+
+                item.setOrderId(
+                    rs.getInt("order_id")
+                );
+
+                item.setProductName(
+                    rs.getString("product_name")
+                );
+
+                item.setProductPrice(
+                    rs.getDouble("product_price")
+                );
+
+                item.setQuantity(
+                    rs.getInt("quantity")
+                );
+
+                items.add(item);
+            }
+
+        } catch (Exception e) {
+        }
+
+        return items;
+    }
 }

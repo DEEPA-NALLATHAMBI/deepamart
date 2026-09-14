@@ -27,7 +27,6 @@ public class AddProductServlet extends HttpServlet {
             response.sendRedirect("products");
 
         } catch (Exception e) {
-            e.printStackTrace();
 
             response.setContentType("text/html;charset=UTF-8");
             response.getWriter().println(

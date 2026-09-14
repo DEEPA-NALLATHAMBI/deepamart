@@ -27,7 +27,6 @@ public class EditProductServlet extends HttpServlet {
             response.sendRedirect("seller-dashboard.jsp");
 
         } catch (Exception e) {
-            e.printStackTrace();
             response.getWriter().println("Product update failed");
         }
     }

@@ -1,19 +1,40 @@
-
 package com.deepamart;
+
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 public class DBConnection {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/deepa_mart";
+    private static final Properties properties = new Properties();
 
-    private static final String USER = "root";
+    static {
+        try (InputStream input =
+                     DBConnection.class.getClassLoader()
+                             .getResourceAsStream("config.properties")) {
 
-    private static final String PASSWORD = "deepa123@";
+            if (input == null) {
+                throw new RuntimeException(
+                        "config.properties not found");
+            }
+
+            properties.load(input);
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Database configuration failed", e);
+        }
+    }
 
     public static Connection getConnection() throws Exception {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+
+        return DriverManager.getConnection(
+                properties.getProperty("db.url"),
+                properties.getProperty("db.user"),
+                properties.getProperty("db.password")
+        );
     }
 }

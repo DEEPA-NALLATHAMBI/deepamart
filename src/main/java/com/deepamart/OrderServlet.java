@@ -28,8 +28,6 @@ public class OrderServlet extends HttpServlet {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
-
             response.getWriter().println("Unable to load orders");
         }
     }

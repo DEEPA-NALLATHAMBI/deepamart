@@ -77,6 +77,17 @@ h2{
 </div>
 
 </div>
-
+    <div style="margin-top:30px; text-align:center;">
+    <a href="${pageContext.request.contextPath}/logout"
+       style="display:inline-block;
+              padding:12px 25px;
+              background:#dc3545;
+              color:white;
+              text-decoration:none;
+              border-radius:6px;
+              font-weight:bold;">
+        Logout
+    </a>
+</div>
 </body>
 </html>

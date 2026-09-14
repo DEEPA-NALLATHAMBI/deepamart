@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
 
@@ -21,6 +23,9 @@ public class SignupServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        // Hash password using BCrypt
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
         String sql = "INSERT INTO users(name, email, password) VALUES (?, ?, ?)";
 
         try (Connection con = DBConnection.getConnection();
@@ -28,15 +33,14 @@ public class SignupServlet extends HttpServlet {
 
             ps.setString(1, username);
             ps.setString(2, email);
-            ps.setString(3, password);
+            ps.setString(3, hashedPassword);
 
             ps.executeUpdate();
 
-            response.sendRedirect("login.html");
+            response.sendRedirect("login");
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.getWriter().println("Signup failed: " + e.getMessage());
-        }
+    response.getWriter().println("Signup failed. Please try again.");
+}
     }
 }

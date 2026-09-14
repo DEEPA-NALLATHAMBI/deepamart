@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
+import com.deepamart.ProductDAO;
+
 @WebServlet("/delete-product")
 public class DeleteProductServlet extends HttpServlet {
 
@@ -21,8 +23,7 @@ public class DeleteProductServlet extends HttpServlet {
             response.sendRedirect("products");
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.getWriter().println("Product deletion failed");
-        }
+    response.getWriter().println("Product deletion failed");
+}
     }
 }

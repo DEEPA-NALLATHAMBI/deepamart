@@ -38,7 +38,6 @@ public class AdminUsersServlet extends HttpServlet {
                    .forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
             response.getWriter().println("Unable to load users.");
         }
     }

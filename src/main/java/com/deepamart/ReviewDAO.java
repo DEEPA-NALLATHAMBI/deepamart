@@ -25,7 +25,6 @@ public class ReviewDAO {
         return result > 0;
 
     } catch (Exception e) {
-        e.printStackTrace();
         return false;
     }
 }
@@ -57,7 +56,6 @@ public class ReviewDAO {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return reviews;

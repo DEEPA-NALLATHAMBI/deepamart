@@ -1,9 +1,13 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>Deepa Mart - Login</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -24,7 +28,7 @@
             background: white;
             padding: 35px 40px;
             border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
         .brand {
@@ -92,36 +96,16 @@
             font-weight: bold;
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0 18px;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #ddd;
-        }
-
-        .divider span {
-            padding: 0 12px;
-            color: #999;
-        }
-
-        .social-btn {
-            width: 100%;
-            padding: 11px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
+        .error-message {
+            text-align: center;
+            color: #c62828;
+            font-weight: bold;
+            margin-top: 15px;
             font-size: 14px;
-            cursor: pointer;
         }
+
     </style>
+
 </head>
 
 <body>
@@ -132,15 +116,17 @@
 
     <h2 class="title">Login</h2>
 
-    <form action="login" method="post">
+    <form action="${pageContext.request.contextPath}/login" method="post">
 
         <label>Username</label>
+
         <input type="text"
                name="username"
                placeholder="Enter username"
                required>
 
         <label>Password</label>
+
         <input type="password"
                name="password"
                placeholder="Enter password"
@@ -154,11 +140,24 @@
 
     <p class="signup-text">
         Don't have an account?
-        <a href="signup.html">Sign Up</a>
+        <a href="${pageContext.request.contextPath}/signup.html">
+            Sign Up
+        </a>
     </p>
 
-    <div class="divider">
-        <span>Or</span>
+
+    <!-- Login error message -->
+
+    <% if (request.getAttribute("error") != null) { %>
+
+        <div class="error-message">
+            <%= request.getAttribute("error") %>
+        </div>
+
+    <% } %>
+
+
+</div>
 
 </body>
 </html>

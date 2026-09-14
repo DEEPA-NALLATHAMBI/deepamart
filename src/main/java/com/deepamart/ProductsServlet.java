@@ -29,10 +29,9 @@ public class ProductsServlet extends HttpServlet {
         try{
          products= productDAO.getAllProducts();
          System.out.println("Products found: " + products.size());
-        } catch(Exception e){
-            e.printStackTrace();
-            throw new ServletException(e);
-        }
+       } catch (Exception e) {
+    throw new ServletException("Unable to load products.");
+}
 
         request.setAttribute("products", products);
 
