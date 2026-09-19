@@ -1,5 +1,5 @@
 <%@ page import="java.util.List" %>
-<%@ page import="com.deepamart.model.Product" %>
+<%@ page import="com.deepamart.Product" %>
 <%@ page import="com.deepamart.model.Review" %>
 <%@ page import="com.deepamart.ReviewDAO" %>
 
@@ -281,7 +281,7 @@
                             <%=review.getRating()%> ★
                         </span>
                         -
-                        <%=esc(review.getComment())%>
+                        <%=esc(review.getReviewText())%>
                     </div>
 
 <%
