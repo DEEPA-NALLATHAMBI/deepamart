@@ -154,7 +154,8 @@ for(OrderItem item : items){
             </div>
 
             <div class="quantity">
-                Quantity: <%=item.getQuantity()%>
+                Quantity: <%=(item.getQuantity())
+                %>
             </div>
 
         </div>
@@ -186,5 +187,15 @@ for(OrderItem item : items){
 
 </div>
 
+<%!
+public String esc(String s) {
+    if (s == null) return "";
+    return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"","&quot;")
+            .replace("'","&#39;");
+}
+%>
 </body>
 </html>

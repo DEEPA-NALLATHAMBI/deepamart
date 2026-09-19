@@ -151,7 +151,7 @@
     <% if (request.getAttribute("error") != null) { %>
 
         <div class="error-message">
-            <%= request.getAttribute("error") %>
+            <%= esc(String.valueOf(request.getAttribute("error"))) %>
         </div>
 
     <% } %>
@@ -160,4 +160,14 @@
 </div>
 
 </body>
+<%!
+public String esc(String s) {
+    if (s == null) return "";
+    return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"","&quot;")
+            .replace("'","&#39;");
+}
+%>
 </html>

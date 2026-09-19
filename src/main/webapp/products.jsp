@@ -1,350 +1,377 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.deepamart.Product" %>
+<%@ page import="com.deepamart.model.Product" %>
 <%@ page import="com.deepamart.model.Review" %>
 <%@ page import="com.deepamart.ReviewDAO" %>
 
 <%!
-public String esc(String s) {
-    if (s == null) return "";
-    return s.replace("&","&amp;")
-            .replace("<","&lt;")
-            .replace(">","&gt;")
-            .replace("\"","&quot;")
-            .replace("'","&#39;");
-}
+    public String esc(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
+    }
+%>
+
+<%
+    List<Product> products = (List<Product>) request.getAttribute("products");
+    String role = (String) session.getAttribute("role");
+
+    if (products == null) {
+        products = new java.util.ArrayList<>();
+    }
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Deepa Mart</title>
+    <meta charset="UTF-8">
+    <title>Products - Deepa Mart</title>
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f5f5f5}
+    <style>
+        * { box-sizing:border-box; }
 
-.header{
- background:#232f3e;color:white;padding:15px 30px;
- display:flex;align-items:center;gap:20px
-}
-.logo{font-size:28px;font-weight:bold;white-space:nowrap}
-.search-box{flex:1;display:flex}
-.search-box input{
- width:100%;padding:12px;border:none;outline:none;font-size:16px
-}
-.search-box button{
- padding:12px 20px;border:none;cursor:pointer;font-weight:bold
-}
-.nav-btn{
- background:#ffd814;border:none;padding:10px 16px;
- border-radius:20px;font-weight:bold;cursor:pointer
-}
-.cart{font-size:18px;cursor:pointer;white-space:nowrap}
+        body {
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#f5f5f5;
+        }
 
-.main{padding:25px 40px}
-.title{margin-bottom:25px;font-size:28px}
+        .header {
+            background:#222;
+            color:white;
+            padding:15px 30px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
 
-.products{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
- gap:22px
-}
-.product{
- background:white;border-radius:12px;padding:18px;
- box-shadow:0 2px 8px rgba(0,0,0,.12)
-}
-.product img{
- width:100%;height:180px;object-fit:contain;margin-bottom:12px
-}
-.product h3{margin:8px 0;font-size:20px}
-.category{color:#666;margin:5px 0}
-.price{font-size:22px;font-weight:bold;margin:10px 0}
-.stock{color:green;margin-bottom:15px}
+        .header h2 { margin:0; }
 
-.add-cart,.delete-btn{
- width:100%;padding:11px;border:none;border-radius:20px;
- cursor:pointer;font-weight:bold
-}
-.add-cart{background:#ffd814}
+        .nav a {
+            color:white;
+            text-decoration:none;
+            margin-left:20px;
+        }
 
-.edit-btn,.review-btn{
- display:block;width:100%;padding:10px;margin-top:10px;
- border-radius:20px;text-align:center;text-decoration:none;
- font-weight:bold
-}
-.edit-btn{background:#ffa41c;color:black}
-.delete-btn{background:#e53935;color:white;margin-top:10px}
-.review-btn{background:#90caf9;color:#111}
+        .search {
+            text-align:center;
+            padding:20px;
+            background:white;
+        }
 
-.reviews{
- margin-top:15px;padding-top:10px;border-top:1px solid #ddd
-}
-.reviews h4{margin:5px 0 10px}
-.review-box{
- background:#f5f5f5;padding:9px;margin-top:7px;border-radius:8px
-}
-.review-text{
- margin:5px 0;
- word-wrap:break-word
-}
-.no-review{color:#777;font-size:14px}
+        .search input {
+            width:60%;
+            max-width:500px;
+            padding:12px;
+            border:1px solid #ccc;
+            border-radius:6px;
+        }
 
-#message{
- position:fixed;bottom:25px;right:25px;
- background:#232f3e;color:white;padding:15px 22px;
- border-radius:8px;font-weight:bold;
- opacity:0;transition:.3s
-}
-#message.show{opacity:1}
+        .message {
+            position:fixed;
+            top:80px;
+            right:20px;
+            background:#222;
+            color:white;
+            padding:12px 18px;
+            border-radius:6px;
+            display:none;
+            z-index:10;
+        }
 
-footer{
- margin-top:40px;padding:20px;text-align:center;
- background:#232f3e;color:white
-}
-</style>
+        .message.show { display:block; }
+
+        .products {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:20px;
+            padding:25px;
+        }
+
+        .card {
+            background:white;
+            padding:15px;
+            border-radius:10px;
+            box-shadow:0 2px 8px #ccc;
+        }
+
+        .card img {
+            width:100%;
+            height:180px;
+            object-fit:contain;
+            border-radius:8px;
+        }
+
+        .card h3 { margin:10px 0 5px; }
+
+        .category {
+            color:#666;
+            font-size:14px;
+        }
+
+        .price {
+            font-size:18px;
+            font-weight:bold;
+            margin:10px 0;
+        }
+
+        button, .btn {
+            border:0;
+            padding:9px 12px;
+            border-radius:5px;
+            cursor:pointer;
+            text-decoration:none;
+            display:inline-block;
+            margin:3px;
+        }
+
+        .cart-btn { background:#222;color:white; }
+        .edit { background:#ffc107;color:#000; }
+        .delete { background:#dc3545;color:white; }
+        .review { background:#198754;color:white; }
+
+        .reviews {
+            margin-top:12px;
+            padding-top:10px;
+            border-top:1px solid #ddd;
+        }
+
+        .review-item {
+            font-size:13px;
+            margin:7px 0;
+        }
+
+        .stars { color:#f5a623; }
+
+        footer {
+            text-align:center;
+            padding:20px;
+            background:#222;
+            color:white;
+        }
+    </style>
 </head>
 
 <body>
 
-<%
-String role = (String)session.getAttribute("role");
-List<Product> products =
-    (List<Product>)request.getAttribute("products");
-%>
-
 <div class="header">
+    <h2>🛒 Deepa Mart</h2>
 
-    <div class="logo">🛒 Deepa Mart</div>
+    <div class="nav">
+        <a href="<%=request.getContextPath()%>/products">Products</a>
 
-    <div class="search-box">
-        <input type="text"
-               id="searchInput"
-               placeholder="Search products...">
-        <button onclick="searchProducts()">Search</button>
+        <% if ("BUYER".equalsIgnoreCase(role)) { %>
+            <a href="<%=request.getContextPath()%>/my-orders">My Orders</a>
+            <a href="<%=request.getContextPath()%>/cart">
+                Cart (<span id="cartCount">0</span>)
+            </a>
+        <% } %>
+
+        <% if ("SELLER".equalsIgnoreCase(role)) { %>
+            <a href="<%=request.getContextPath()%>/seller-dashboard.jsp">Dashboard</a>
+        <% } %>
+
+        <% if ("ADMIN".equalsIgnoreCase(role)) { %>
+            <a href="<%=request.getContextPath()%>/admin-dashboard.jsp">Dashboard</a>
+        <% } %>
     </div>
-
-    <% if("BUYER".equalsIgnoreCase(role)){ %>
-
-        <button class="nav-btn"
-                onclick="location.href='my-orders'">
-            📦 My Orders
-        </button>
-
-    <% } %>
-
-    <div class="cart" onclick="showCart()">
-        🛒 Cart (<span id="cartCount">0</span>)
-    </div>
-
 </div>
 
-<div class="main">
+<div id="message" class="message"></div>
 
-<h1 class="title">Shop Products</h1>
+<div class="search">
+    <input type="text"
+           id="searchBox"
+           placeholder="Search products..."
+           onkeyup="searchProducts()">
+</div>
 
-<div class="products">
+<div class="products" id="productList">
 
 <%
-if(products != null && !products.isEmpty()) {
-
-    for(Product product : products) {
-
-        String imagePath = product.getImageUrl();
-
-        if(imagePath == null || imagePath.trim().isEmpty())
-            imagePath = "images/default.jpg";
-        else if(!imagePath.startsWith("images/"))
-            imagePath = "images/" + imagePath;
+    for (Product product : products) {
 
         String productName = esc(product.getProductName());
         String category = esc(product.getCategory());
+
+        String imagePath = product.getImageUrl();
+
+        if (imagePath == null || imagePath.trim().isEmpty()) {
+            imagePath = "images/default.jpg";
+        } else if (!imagePath.startsWith("images/")) {
+            imagePath = "images/" + imagePath;
+        }
+
+        imagePath = esc(imagePath);
+
+        int productId = product.getProductId();
+        double price = product.getPrice();
 %>
 
-<div class="product">
+    <div class="card product-card"
+         data-name="<%=productName%>"
+         data-category="<%=category%>">
 
-    <img src="<%=request.getContextPath()%>/<%=imagePath%>"
-         alt="<%=productName%>">
+        <img src="<%=request.getContextPath()%>/<%=imagePath%>"
+             alt="<%=productName%>"
+             onerror="this.src='<%=request.getContextPath()%>/images/default.jpg'">
 
-    <h3><%=productName%></h3>
+        <h3><%=productName%></h3>
 
-    <p class="category"><%=category%></p>
+        <div class="category">
+            Category: <%=category%>
+        </div>
 
-    <p class="price">₹<%=product.getPrice()%></p>
+        <div class="price">
+            ₹<%=price%>
+        </div>
 
-    <p class="stock">
-        In Stock: <%=product.getStock()%>
-    </p>
+        <% if ("BUYER".equalsIgnoreCase(role)) { %>
 
-    <button class="add-cart"
-            onclick="addToCart(
-            <%=product.getProductId()%>,
-            '<%=product.getProductName().replace("'","\\'")%>',
-            <%=product.getPrice()%>)">
-        Add to Cart
-    </button>
-
-
-    <!-- Seller / Admin -->
-
-    <% if("SELLER".equalsIgnoreCase(role) ||
-          "ADMIN".equalsIgnoreCase(role)) { %>
-
-        <a class="edit-btn"
-           href="edit-product.jsp?id=<%=product.getProductId()%>">
-            Edit Product
-        </a>
-
-        <form action="delete-product"
-              method="post"
-              onsubmit="return confirm('Delete this product?');">
-
-            <input type="hidden"
-                   name="id"
-                   value="<%=product.getProductId()%>">
-
-            <button class="delete-btn" type="submit">
-                Delete Product
+            <button class="cart-btn add-cart"
+                    type="button"
+                    data-id="<%=productId%>"
+                    data-name="<%=productName%>"
+                    data-price="<%=price%>"
+                    onclick="addToCart(this)">
+                Add to Cart
             </button>
 
-        </form>
-
-    <% } %>
-
-
-    <!-- Buyer Review -->
-
-    <% if("BUYER".equalsIgnoreCase(role)) { %>
-
-        <a class="review-btn"
-           href="review.jsp?productId=<%=product.getProductId()%>">
-            ⭐ Rate & Review
-        </a>
-
-    <% } %>
-
-
-    <!-- Customer Reviews -->
-
-    <%
-    ReviewDAO reviewDAO = new ReviewDAO();
-    List<Review> reviews =
-        reviewDAO.getReviewsByProduct(product.getProductId());
-    %>
-
-    <div class="reviews">
-
-        <h4>⭐ Customer Reviews</h4>
-
-        <% if(reviews != null && !reviews.isEmpty()) {
-
-            for(Review review : reviews) {
-        %>
-
-            <div class="review-box">
-
-                <div>
-                    <% for(int i=0;i<review.getRating();i++) { %>
-                        ⭐
-                    <% } %>
-                </div>
-
-                <!-- XSS PROTECTION -->
-                <p class="review-text">
-                    <%=esc(review.getReviewText())%>
-                </p>
-
-            </div>
-
-        <%
-            }
-
-        } else {
-        %>
-
-            <p class="no-review">
-                No reviews yet.
-            </p>
+            <a class="btn review"
+               href="<%=request.getContextPath()%>/review?productId=<%=productId%>">
+                Review
+            </a>
 
         <% } %>
 
-    </div>
+        <% if ("SELLER".equalsIgnoreCase(role)
+                || "ADMIN".equalsIgnoreCase(role)) { %>
 
-</div>
+            <a class="btn edit"
+               href="<%=request.getContextPath()%>/edit-product?id=<%=productId%>">
+                Edit
+            </a>
+
+            <a class="btn delete"
+               href="<%=request.getContextPath()%>/delete-product?id=<%=productId%>"
+               onclick="return confirm('Delete this product?');">
+                Delete
+            </a>
+
+        <% } %>
+
+        <div class="reviews">
+            <b>Reviews</b>
+
+<%
+            try {
+                ReviewDAO reviewDAO = new ReviewDAO();
+                List<Review> reviews =
+                    reviewDAO.getReviewsByProduct(productId);
+
+                if (reviews != null && !reviews.isEmpty()) {
+
+                    for (Review review : reviews) {
+%>
+
+                    <div class="review-item">
+                        <span class="stars">
+                            <%=review.getRating()%> ★
+                        </span>
+                        -
+                        <%=esc(review.getComment())%>
+                    </div>
+
+<%
+                    }
+
+                } else {
+%>
+
+                    <div class="review-item">
+                        No reviews yet.
+                    </div>
+
+<%
+                }
+
+            } catch (Exception e) {
+%>
+
+                <div class="review-item">
+                    Reviews unavailable.
+                </div>
+
+<%
+            }
+%>
+
+        </div>
+    </div>
 
 <%
     }
-} else {
 %>
 
-<p>No products available.</p>
-
-<% } %>
-
-</div>
 </div>
 
 <footer>
-© 2026 Deepa Mart | Happy Shopping 🛒
+    © 2026 Deepa Mart
 </footer>
 
-<div id="message"></div>
-
 <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-document.getElementById("cartCount").innerText = cart.length;
-
-function addToCart(id,name,price) {
-
-    cart.push({
-        id:id,
-        name:name,
-        price:price
-    });
-
-    localStorage.setItem("cart",JSON.stringify(cart));
-
-    document.getElementById("cartCount").innerText =
-        cart.length;
-
-    let message = document.getElementById("message");
-
-    message.innerText = name + " added to cart ✓";
-    message.classList.add("show");
-
-    setTimeout(function() {
-        message.classList.remove("show");
-    },2000);
-}
-
-function showCart() {
-    window.location.href = "Cart.jsp";
-}
-
-function searchProducts() {
-
-    let filter =
-        document.getElementById("searchInput")
-        .value.toLowerCase();
-
-    let products =
-        document.getElementsByClassName("product");
-
-    for(let i=0;i<products.length;i++) {
-
-        let name =
-            products[i]
-            .getElementsByTagName("h3")[0]
-            .innerText.toLowerCase();
-
-        products[i].style.display =
-            name.includes(filter) ? "" : "none";
+    function updateCartCount() {
+        document.getElementById("cartCount").innerText = cart.length;
     }
-}
 
+    function addToCart(button) {
+        let id = Number(button.dataset.id);
+        let name = button.dataset.name;
+        let price = Number(button.dataset.price);
+
+        cart.push({
+            id: id,
+            name: name,
+            price: price
+        });
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+
+        let message = document.getElementById("message");
+        message.innerText = name + " added to cart ✓";
+        message.classList.add("show");
+
+        setTimeout(function() {
+            message.classList.remove("show");
+        }, 2000);
+    }
+
+    function searchProducts() {
+        let text =
+            document.getElementById("searchBox")
+                    .value.toLowerCase();
+
+        let cards =
+            document.querySelectorAll(".product-card");
+
+        cards.forEach(function(card) {
+            let name = card.dataset.name.toLowerCase();
+            let category = card.dataset.category.toLowerCase();
+
+            if (name.includes(text) || category.includes(text)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    updateCartCount();
 </script>
 
 </body>

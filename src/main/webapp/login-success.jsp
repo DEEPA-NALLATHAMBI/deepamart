@@ -95,10 +95,9 @@ p{
     <h2>Welcome to Deepa Mart</h2>
 
     <p>
-        Welcome,
-        <b><%= session.getAttribute("username") %></b>!
-    </p>
-
+    Welcome,
+    <b><%= esc(String.valueOf(session.getAttribute("username"))) %></b>!
+</p>
     <p>Happy Shopping! 🛒</p>
 
     <a href="products" class="btn">
@@ -132,4 +131,14 @@ window.onload=function(){
 </script>
 
 </body>
+<%!
+public String esc(String s) {
+    if (s == null) return "";
+    return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"","&quot;")
+            .replace("'","&#39;");
+}
+%>
 </html>

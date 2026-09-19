@@ -54,11 +54,11 @@
                value="<%=product.getProductId()%>">
 
         <input type="text" name="name"
-               value="<%=product.getProductName()%>"
+               value="<%=esc(product.getProductName())%>"
                required>
 
         <input type="text" name="category"
-               value="<%=product.getCategory()%>"
+               value="<%=esc(product.getCategory())%>"
                required>
 
         <input type="number" name="price"
@@ -70,13 +70,22 @@
                required>
 
         <input type="text" name="image"
-               value="<%=product.getImageUrl()%>">
+               value="<%=esc(product.getImageUrl())%>"
 
         <br>
 
         <button type="submit">Update Product</button>
     </form>
 </div>
-
 </body>
+<%!
+public String esc(String s) {
+    if (s == null) return "";
+    return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"","&quot;")
+            .replace("'","&#39;");
+}
+%>
 </html>

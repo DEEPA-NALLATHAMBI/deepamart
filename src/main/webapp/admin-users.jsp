@@ -126,8 +126,8 @@ for(Map<String,Object> user : users){
 
 <tr>
     <td><%=user.get("id")%></td>
-    <td><%=user.get("name")%></td>
-    <td class="role"><%=user.get("role")%></td>
+    <td><%=esc(String.valueOf(user.get("name")))%></td>
+   <td class="role"><%=user.get("role")%></td>
 </tr>
 
 <%
@@ -145,4 +145,14 @@ for(Map<String,Object> user : users){
 </div>
 
 </body>
+<%!
+public String esc(String s) {
+    if (s == null) return "";
+    return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"","&quot;")
+            .replace("'","&#39;");
+}
+%>
 </html>
