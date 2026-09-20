@@ -61,7 +61,7 @@ footer{text-align:center;padding:20px;background:#252525;color:white}
 <a href="<%=request.getContextPath()%>/products">Products</a>
 <%if("BUYER".equalsIgnoreCase(role)){%>
 <a href="<%=request.getContextPath()%>/my-orders">My Orders</a>
-<a href="<%=request.getContextPath()%>/cart.jsp">Cart (<span id="cartCount">0</span>)</a>
+<a href="<%=request.getContextPath()%>/Cart.jsp">Cart (<span id="cartCount">0</span>)</a>
 <%}%>
 <%if("SELLER".equalsIgnoreCase(role)){%>
 <a href="<%=request.getContextPath()%>/seller-dashboard.jsp">Dashboard</a>
