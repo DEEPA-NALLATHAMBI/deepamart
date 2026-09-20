@@ -70,7 +70,7 @@
                required>
 
         <input type="text" name="image"
-               value="<%=esc(product.getImageUrl())%>"
+               value="<%=esc(product.getImageUrl())%>">
 
         <br>
 
