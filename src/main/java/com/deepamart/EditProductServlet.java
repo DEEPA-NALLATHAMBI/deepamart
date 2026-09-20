@@ -75,7 +75,7 @@ public class EditProductServlet extends HttpServlet {
                 id, name, category, price, stock, image
             );
 
-            response.sendRedirect("seller-dashboard.jsp");
+            response.sendRedirect(request.getContextPath()+"/products");
 
         } catch (Exception e) {
             response.getWriter().println(
