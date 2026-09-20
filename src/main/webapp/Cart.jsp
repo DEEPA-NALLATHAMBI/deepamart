@@ -50,7 +50,6 @@ function displayCart(){
     }
 
     let html="",total=0;
-
     for(let i=0;i<cart.length;i++){
         total+=Number(cart[i].price);
         html+='<div class="cart-item"><div><div class="item-name">'
@@ -75,7 +74,7 @@ function checkout(){
         alert("Your cart is empty!");
         return;
     }
-    location.href="checkout.jsp";
+    location.href="<%=request.getContextPath()%>/checkout.jsp";
 }
 
 displayCart();
