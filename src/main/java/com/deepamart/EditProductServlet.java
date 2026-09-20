@@ -8,19 +8,19 @@ import java.io.IOException;
 
 @WebServlet("/edit-product")
 public class EditProductServlet extends HttpServlet {
-
     private boolean isAuthorized(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {
-            return false;
-        }
-
-        String role = (String) session.getAttribute("role");
-
-        return "SELLER".equalsIgnoreCase(role)
-                || "ADMIN".equalsIgnoreCase(role);
+    HttpSession session = request.getSession(false);
+    if (session == null) {
+        return false;
     }
+    Object roleObject = session.getAttribute("role")
+    if (roleObject == null) {
+        return false;
+    }
+    String role = roleObject.toString().trim();
+    return role.equalsIgnoreCase("SELLER")
+            || role.equalsIgnoreCase("ADMIN");
+}
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
