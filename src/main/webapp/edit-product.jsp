@@ -48,7 +48,7 @@
 <div class="box">
     <h1>Edit Product</h1>
 
-    <form action="edit-product" method="post">
+    <form action="<%=request.getContextPath()%>/edit-product" method="post">
 
         <input type="hidden" name="id"
                value="<%=product.getProductId()%>">
