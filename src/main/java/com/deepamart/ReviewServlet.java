@@ -10,54 +10,91 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet("/add-review")
+@WebServlet({"/review", "/add-review"})
 public class ReviewServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                           HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
-        String productIdParam = request.getParameter("productId");
-        String ratingParam = request.getParameter("rating");
-        String reviewText = request.getParameter("reviewText");
+        HttpSession session = request.getSession(false);
 
-        if (productIdParam == null || ratingParam == null) {
-            response.getWriter().println("Invalid review details.");
+        if (session == null ||
+            session.getAttribute("userId") == null) {
+
+            response.sendRedirect(
+                    request.getContextPath() + "/login.jsp");
             return;
         }
 
-        int productId = Integer.parseInt(productIdParam);
-        int rating = Integer.parseInt(ratingParam);
+        request.getRequestDispatcher("/review.jsp")
+               .forward(request, response);
+    }
 
-        HttpSession session = request.getSession();
+    @Override
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+            throws ServletException, IOException {
 
-        Object userIdObject = session.getAttribute("userId");
+        HttpSession session = request.getSession(false);
 
-        if (userIdObject == null) {
-            response.sendRedirect("login.html");
+        if (session == null ||
+            session.getAttribute("userId") == null) {
+
+            response.sendRedirect(
+                    request.getContextPath() + "/login.jsp");
             return;
         }
 
-        int userId = (int) userIdObject;
+        try {
+            int productId = Integer.parseInt(
+                    request.getParameter("productId"));
 
-        Review review = new Review(
-                productId,
-                userId,
-                rating,
-                reviewText
-        );
+            int rating = Integer.parseInt(
+                    request.getParameter("rating"));
 
-        ReviewDAO dao = new ReviewDAO();
-                  if (dao.addReview(review)) {
+            String reviewText = request.getParameter("reviewText");
 
-    response.sendRedirect(
-        request.getContextPath()
-        + "/products"
-    );
+            Object userIdObject = session.getAttribute("userId");
+            int userId = Integer.parseInt(
+                    userIdObject.toString());
 
-} else {
-    response.getWriter().println("Review insert failed. Check Tomcat console.");
-}
+            if (rating < 1 || rating > 5 ||
+                reviewText == null ||
+                reviewText.trim().isEmpty()) {
+
+                response.sendRedirect(
+                        request.getContextPath()
+                        + "/review.jsp?productId=" + productId);
+
+                return;
+            }
+
+            Review review = new Review(
+                    productId,
+                    userId,
+                    rating,
+                    reviewText.trim()
+            );
+
+            ReviewDAO dao = new ReviewDAO();
+
+            if (dao.addReview(review)) {
+
+                response.sendRedirect(
+                        request.getContextPath() + "/products");
+
+            } else {
+                response.getWriter().println(
+                        "Review insert failed.");
+            }
+
+        } catch (Exception e) {
+
+            response.getWriter().println(
+                    "Error while submitting review: "
+                    + e.getMessage());
+        }
     }
 }
