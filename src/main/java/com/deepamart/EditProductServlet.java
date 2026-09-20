@@ -37,7 +37,7 @@ public class EditProductServlet extends HttpServlet {
         String id = request.getParameter("id");
 
         if (id == null) {
-            response.sendRedirect("seller-dashboard.jsp");
+            response.sendRedirect(request.getContextPath()+"/products");
             return;
         }
 
