@@ -13,7 +13,7 @@ public class EditProductServlet extends HttpServlet {
     if (session == null) {
         return false;
     }
-    Object roleObject = session.getAttribute("role")
+    Object roleObject = session.getAttribute("role");
     if (roleObject == null) {
         return false;
     }
