@@ -33,7 +33,7 @@ public class DBConnection {
                     "Railway MySQL environment variables missing");
         }
 
-        String url = "jdbc:mysql://" + host + ":" + port + "/"
+        String url = "jdbc:://" + host + ":" + port + "/"
                 + database
                 + "?useSSL=false&allowPublicKeyRetrieval=true"
                 + "&serverTimezone=UTC";
