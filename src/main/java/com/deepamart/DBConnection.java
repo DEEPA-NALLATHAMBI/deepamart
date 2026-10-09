@@ -2,19 +2,16 @@ package com.deepamart;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.Properties;
 
 public class DBConnection {
-
-    private static final Properties properties = new Properties();
 
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(
-                    "Database driver loading failed", e);
+                "MySQL driver loading failed", e
+            );
         }
     }
 
@@ -26,22 +23,29 @@ public class DBConnection {
         String user = System.getenv("MYSQLUSER");
         String password = System.getenv("MYSQLPASSWORD");
 
-        if (host == null || port == null || database == null
-                || user == null || password == null) {
+        // Railway environment variables irundhaal Railway connection
+        if (host != null && port != null
+                && database != null && user != null
+                && password != null) {
 
-            throw new RuntimeException(
-                    "Railway MySQL environment variables missing");
+            String url = "jdbc:mysql://" + host + ":" + port
+                    + "/" + database
+                    + "?serverTimezone=UTC";
+
+            return DriverManager.getConnection(
+                    url, user, password
+            );
         }
 
-        String url = "jdbc:://" + host + ":" + port + "/"
-                + database
-                + "?useSSL=false&allowPublicKeyRetrieval=true"
-                + "&serverTimezone=UTC";
+        // Local MySQL connection
+        String url = "jdbc:mysql://localhost:3306/deepa_mart"
+                + "?serverTimezone=UTC";
+
+        String localUser = "root";
+        String localPassword = "deepa123@";
 
         return DriverManager.getConnection(
-                url,
-                user,
-                password
+                url, localUser, localPassword
         );
     }
 }

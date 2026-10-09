@@ -15,32 +15,52 @@ import org.mindrot.jbcrypt.BCrypt;
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
 
+    @Override
     protected void doPost(HttpServletRequest request,
-                           HttpServletResponse response)
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // Hash password using BCrypt
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        if (username == null || email == null || password == null
+                || username.isBlank()
+                || email.isBlank()
+                || password.isBlank()) {
 
-        String sql = "INSERT INTO users(name, email, password) VALUES (?, ?, ?)";
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/signup.html?error=signup");
+            return;
+        }
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql =
+                "INSERT INTO users(name, email, password) VALUES (?, ?, ?)";
 
-            ps.setString(1, username);
-            ps.setString(2, email);
-            ps.setString(3, hashedPassword);
+        try {
+            String hashedPassword =
+                    BCrypt.hashpw(password, BCrypt.gensalt());
 
-            ps.executeUpdate();
+            try (Connection con = DBConnection.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
 
-            response.sendRedirect("login");
+                ps.setString(1, username);
+                ps.setString(2, email);
+                ps.setString(3, hashedPassword);
+
+                ps.executeUpdate();
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/login");
 
         } catch (Exception e) {
-    response.getWriter().println("Signup failed. Please try again.");
-}
+            getServletContext().log("Signup failed", e);
+
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/signup.html?error=signup");
+        }
     }
 }

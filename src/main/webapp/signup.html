@@ -121,6 +121,17 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        .error-message {
+            display: none;
+            color: #c62828;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -131,6 +142,10 @@
     <div class="brand">DEEPA MART</div>
 
     <h2 class="title">Create Account</h2>
+
+    <div id="signup-error" class="error-message" role="alert">
+        Signup failed. Please try again.
+    </div>
 
     <form action="signup" method="post">
 
@@ -165,6 +180,23 @@
 
     <div class="divider">
         <span>Or</span>
+    </div>
+
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("error") === "signup") {
+        document.getElementById("signup-error").style.display = "block";
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+    }
+</script>
 
 </body>
 </html>
