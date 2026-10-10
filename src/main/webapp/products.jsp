@@ -50,6 +50,100 @@ button,.btn{border:0;padding:9px 12px;border-radius:5px;cursor:pointer;text-deco
 .stars{color:#e7a900}
 footer{text-align:center;padding:20px;background:#252525;color:white}
 @media(max-width:600px){.header{flex-direction:column;gap:15px;padding:15px}.nav a{margin-left:7px;font-size:12px}.search input{width:90%}.products{padding:20px}}
+/* Deepa Mart Chatbot */
+#chatToggle{
+ position:fixed;
+ right:22px;
+ bottom:22px;
+ width:60px;
+ height:60px;
+ border-radius:50%;
+ background:#252525;
+ color:white;
+ font-size:25px;
+ border:2px solid #f4c542;
+ cursor:pointer;
+ z-index:1000;
+ box-shadow:0 4px 12px #999;
+}
+#chatPanel{
+ display:none;
+ position:fixed;
+ right:22px;
+ bottom:95px;
+ width:min(350px,calc(100vw - 30px));
+ height:440px;
+ background:white;
+ border-radius:12px;
+ box-shadow:0 5px 25px #999;
+ z-index:1000;
+ overflow:hidden;
+}
+#chatPanel.open{
+ display:flex;
+ flex-direction:column;
+}
+#chatHeader{
+ background:#252525;
+ color:white;
+ padding:15px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+#chatClose{
+ background:transparent;
+ color:white;
+ font-size:20px;
+ padding:0 5px;
+}
+#chatMessages{
+ flex:1;
+ overflow-y:auto;
+ padding:12px;
+ background:#f4f6f9;
+}
+.chat-bubble{
+ max-width:90%;
+ padding:10px 12px;
+ margin:8px 0;
+ border-radius:10px;
+ font-size:13px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.chat-bot{
+ background:white;
+ border:1px solid #ddd;
+ margin-right:auto;
+}
+.chat-user{
+ background:#252525;
+ color:white;
+ margin-left:auto;
+}
+#chatForm{
+ display:flex;
+ gap:6px;
+ padding:10px;
+ border-top:1px solid #ddd;
+}
+#chatInput{
+ min-width:0;
+ flex:1;
+ padding:10px;
+ border:1px solid #bbb;
+ border-radius:8px;
+}
+#chatSend{
+ background:#f4c542;
+ color:#222;
+}
+#chatStatus{
+ font-size:11px;
+ color:#666;
+ padding:0 12px 6px;
+}
 </style>
 </head>
 
@@ -73,6 +167,31 @@ footer{text-align:center;padding:20px;background:#252525;color:white}
 </div>
 
 <div id="message" class="message"></div>
+<button id="chatToggle" type="button" aria-label="Open Deepa Mart chat">💬</button>
+
+<div id="chatPanel" role="dialog" aria-label="Deepa Mart AI Assistant">
+  <div id="chatHeader">
+    <div>
+      <b>Deepa Mart Assistant</b>
+      <div style="font-size:11px;margin-top:4px">Ask about shopping</div>
+    </div>
+    <button id="chatClose" type="button" aria-label="Close chat">×</button>
+  </div>
+
+  <div id="chatMessages" aria-live="polite">
+    <div class="chat-bubble chat-bot">
+      Hello! 👋 Welcome to Deepa Mart. Ask me about products, cart, orders, checkout or reviews.
+    </div>
+  </div>
+
+  <div id="chatStatus">Enter a question to get started.</div>
+
+  <form id="chatForm">
+    <input id="chatInput" type="text" maxlength="500"
+           placeholder="Type your question..." autocomplete="off" required>
+    <button id="chatSend" type="submit">Send</button>
+  </form>
+</div>
 
 <div class="search">
 <input id="searchBox" type="text" placeholder="Search products..." onkeyup="searchProducts()">
@@ -182,6 +301,83 @@ card.style.display=name.includes(text)||category.includes(text)?"":"none";
 }
 
 updateCartCount();
+const chatToggle = document.getElementById("chatToggle");
+const chatPanel = document.getElementById("chatPanel");
+const chatClose = document.getElementById("chatClose");
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+const chatStatus = document.getElementById("chatStatus");
+const chatSend = document.getElementById("chatSend");
+
+chatToggle.addEventListener("click", () => {
+    chatPanel.classList.toggle("open");
+    if (chatPanel.classList.contains("open")) {
+        chatInput.focus();
+    }
+});
+
+chatClose.addEventListener("click", () => {
+    chatPanel.classList.remove("open");
+});
+
+function addChatBubble(text, type) {
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble " +
+        (type === "user" ? "chat-user" : "chat-bot");
+    bubble.textContent = text;
+    chatMessages.appendChild(bubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    addChatBubble(message, "user");
+    chatInput.value = "";
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    chatStatus.textContent = "Assistant is replying...";
+
+    try {
+        const response = await fetch(
+            "<%=request.getContextPath()%>/api/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded;charset=UTF-8"
+                },
+                body: new URLSearchParams({ message: message })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.reply || "Unable to send message.");
+        }
+
+        addChatBubble(
+            data.reply || "Sorry, I could not prepare a reply.",
+            "bot"
+        );
+        chatStatus.textContent = "You can ask another question.";
+    } catch (error) {
+        addChatBubble(
+            "Sorry, chat is temporarily unavailable. Please try again.",
+            "bot"
+        );
+        chatStatus.textContent = "Please try again.";
+    } finally {
+        chatInput.disabled = false;
+        chatSend.disabled = false;
+        chatInput.focus();
+    }
+});
 </script>
 
 </body>
