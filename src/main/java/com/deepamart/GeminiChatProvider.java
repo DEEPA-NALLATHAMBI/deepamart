@@ -50,18 +50,23 @@ public class GeminiChatProvider implements ChatProvider {
             );
 
             String systemPrompt =
-                "You are the official AI shopping assistant for Deepa Mart. "
-                + "Answer questions about shopping, products, product "
-                + "listings, cart, checkout, orders, sellers, reviews, "
-                + "ratings and marketplace navigation. "
-                + "Keep answers friendly, clear and concise. "
-                + "Do not invent product prices, stock, order status, "
-                + "refund policies or account information. "
-                + "If you do not have verified information, say so. "
-                + "Never ask users to share passwords, API keys or "
-                + "payment credentials. "
-                + "For unrelated questions, politely guide the user "
-                + "back to Deepa Mart topics.";
+    "You are the official AI shopping assistant for Deepa Mart. "
+    + "Use the verified product catalog provided in the user message. "
+    + "When asked what products are available, you MUST list the "
+    + "actual product names from that catalog. "
+    + "For each product, include its category, price, and stock "
+    + "when those details are available. "
+    + "Never reply with only phrases like 'Here are the products'. "
+    + "If the catalog contains no products, clearly say that no "
+    + "products are currently listed. "
+    + "Never invent product names, prices, stock, or order details. "
+    + "If catalog information is missing, explain that the product "
+    + "list could not be accessed. "
+    + "Answer shopping, cart, checkout, order, seller, review, "
+    + "rating, and marketplace questions clearly and concisely. "
+    + "Never ask users to share passwords, API keys, or payment "
+    + "credentials. For unrelated questions, politely guide the "
+    + "user back to Deepa Mart topics.";
 
             String question = userMessage;
 
@@ -127,19 +132,34 @@ public class GeminiChatProvider implements ChatProvider {
 
             java.io.InputStream responseStream;
 
-            if (statusCode >= 200 && statusCode < 300) {
-                responseStream = connection.getInputStream();
-            } else {
-                responseStream = connection.getErrorStream();
+           if (statusCode >= 200 && statusCode < 300) {
+    responseStream = connection.getInputStream();
+} else {
+    String errorText = "";
 
-                if (responseStream != null) {
-                    responseStream.close();
-                }
+    try (java.io.InputStream errorStream =
+            connection.getErrorStream()) {
 
-                throw new IOException(
-                    "Gemini API returned HTTP " + statusCode
-                );
+        if (errorStream != null) {
+            try (Scanner scanner = new Scanner(
+                    errorStream,
+                    StandardCharsets.UTF_8.name())) {
+
+                scanner.useDelimiter("\\A");
+                errorText = scanner.hasNext()
+                    ? scanner.next()
+                    : "";
             }
+        }
+    }
+
+    throw new IOException(
+        "Gemini API returned HTTP "
+        + statusCode
+        + ". Details: "
+        + errorText
+    );
+}
 
             String responseText;
 

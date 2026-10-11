@@ -41,7 +41,6 @@ public class ProductDAO {
             ps.setString(2, category);
             ps.setDouble(3, price);
             ps.setInt(4, stock);
-            ps.setInt(4, stock);
             ps.setString(5, image);
             ps.executeUpdate();
         }

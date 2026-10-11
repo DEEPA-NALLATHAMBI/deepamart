@@ -21,6 +21,9 @@ public class ChatService {
 
             selectedProvider = "gemini";
         }
+        System.out.println(
+    "Selected chatbot provider: " + selectedProvider
+);
 
         if ("mock".equalsIgnoreCase(selectedProvider)) {
 
